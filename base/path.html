@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh_EN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+<script src="../js/vue.js"></script>
+<script src="../js/vue-router.js"></script>
+
+<div id="app">
+    <p>
+        <router-link to="/user/foo">/user/foo</router-link>
+        <router-link to="/user/bar">/user/bar</router-link>
+    </p>
+    <router-view></router-view>
+</div>
+<script>
+    /*
+     * 现在呢，像 /user/foo 和 /user/bar 都将映射到相同的路由。  一个组件，不同内容
+     * */
+    const User = {
+        template: `<div>绝对路径为: {{ $route.path}}</div>`
+    };
+
+    const router = new VueRouter({
+        routes: [
+            { path: '/user/:id', component: User }
+        ]
+    });
+
+    const app = new Vue({ router }).$mount('#app')
+
+
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh_EN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+<script src="../js/vue.js"></script>
+<script src="../js/vue-router.js"></script>
+
+<div id="app">
+    <p>
+
+        <router-link to="/user/evan/post/123">/user/evan/post/123</router-link>
+    </p>
+    <router-view></router-view>
+</div>
+<script>
+   /*
+   * 此时我们知道:我们用$route.params取值
+   * */
+    const User = {
+        template: `<div>User {{ $route.params.username }}{{ $route.params.post_id }}</div>`
+    };
+
+    const router = new VueRouter({
+        routes: [
+            { path: '/user/:username/post/:post_id', component: User }
+        ]
+    });
+
+    const app = new Vue({ router }).$mount('#app')
+
+
+
+
+</script>
+</body>
+</html>

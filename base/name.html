@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh_EN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+<script src="../js/vue.js"></script>
+<script src="../js/vue-router.js"></script>
+
+<div id="app">
+    <h1>Named Routes</h1>
+    <p>Current route name: {{ $route.name }}</p>
+    <ul>
+        <li><router-link :to="{ name: 'home' }">home</router-link></li>
+        <li><router-link :to="{ name: 'foo' }">foo</router-link></li>
+        <li><router-link :to="{ name: 'bar', params: { id: 123 }}">bar</router-link></li>
+    </ul>
+    <router-view class="view"></router-view>
+</div>
+<script>
+    const Home = { template: '<div>This is Home</div>' };
+    const Foo = { template: '<div>This is Foo</div>' };
+    const Bar = { template: '<div>This is Bar {{ $route.params.id }}</div>' };
+
+    const router = new VueRouter({
+        routes: [
+            { path: '/', name: 'home', component: Home },
+            { path: '/foo', name: 'foo', component: Foo },
+            { path: '/bar/:id', name: 'bar', component: Bar }
+        ]
+    })
+
+
+
+
+    // 4. 创建和挂载根实例。
+    // 记得要通过 router 配置参数注入路由，
+    // 从而让整个应用都有路由功能
+    const app = new Vue({
+        router
+    }).$mount('#app')
+
+</script>
+</body>
+</html>

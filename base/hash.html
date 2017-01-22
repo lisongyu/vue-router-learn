@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh_EN">
+<head>
+    <meta charset="UTF-8">
+    <title>hash</title>
+</head>
+<body>
+<script src="../js/vue.js"></script>
+<script src="../js/vue-router.js"></script>
+
+<div id="app">
+    <p>
+        <router-link to="/foo#user=1">hash</router-link>
+
+    </p>
+    <router-view></router-view>
+</div>
+<script>
+
+    const User = {
+        template: `<div>#号及后面的内容: {{ $route.hash}}</div>`
+    };
+
+    const router = new VueRouter({
+        routes: [
+            { path: '/foo', component: User }
+        ]
+    });
+
+    const app = new Vue({ router }).$mount('#app')
+
+
+
+
+</script>
+</body>
+</html>
