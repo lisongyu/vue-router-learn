@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh_EN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+<script src="../js/vue.js"></script>
+<script src="../js/vue-router.js"></script>
+
+<div id="app">
+    <h1>Hello App!</h1>
+    <p>
+        <!-- 使用 router-link 组件来导航. -->
+        <!-- 通过传入 `to` 属性指定链接. -->
+        <!-- <router-link> 默认会被渲染成一个 `<a>` 标签 -->
+        <router-link to="/foo">Go to Foo</router-link>
+        <router-link to="/foo/bar">Go to Foo/bar</router-link>
+    </p>
+    <!-- 路由出口 -->
+    <!-- 路由匹配到的组件将渲染在这里 -->
+    <router-view></router-view>
+</div>
+<script>
+    // 0. 如果使用模块化机制编程，導入Vue和VueRouter，要调用 Vue.use(VueRouter)
+
+    // 1. 定义（路由）组件。
+    // 可以从其他文件 import 进来
+    const Foo = { template: '<div>foo<router-view></router-view></div>' };
+    const Bar = { template: '<div>bar</div>' };
+    const Login = { template: '<div>请输入用户名   密码</div>' };
+
+
+    // 2. 定义路由
+    // 每个路由应该映射一个组件。 其中"component" 可以是
+    // 通过 Vue.extend() 创建的组件构造器，
+    // 或者，只是一个组件配置对象。
+    // 我们晚点再讨论嵌套路由。
+
+
+
+    const router = new VueRouter({
+        routes: [
+            {
+                path: '/foo',
+                component: Foo,
+                children: [
+                    {
+                        path: 'bar',
+                        component: Bar,
+                        // a meta field
+                        meta: { requiresAuth: true }
+                    }
+                ]
+            },
+            { path: '/login', component: Login }
+        ]
+    });
+    //全局导航钩子
+    router.beforeEach(function (to, from, next) {
+
+        //如果有一些记录的话
+        if (to.matched.some(
+                        function (record) {
+                            console.log(record);//record相当于child
+                            return record.meta.requiresAuth;
+                        }
+                )
+        ) {
+
+            // this route requires auth, check if logged in
+            // if not, redirect to login page.
+            if (!this.login) {
+                next({
+                    path: '/login'
+
+                });
+            } else {
+                next();
+            }
+            //没有记录直接下一步
+        } else {
+            next(); // 确保一定要调用 next()
+        }
+    });
+
+
+
+    // 4. 创建和挂载根实例。
+    // 记得要通过 router 配置参数注入路由，
+    // 从而让整个应用都有路由功能
+    const app = new Vue({
+        router,
+        data:{
+            return:{
+                login:false
+            }
+        }
+    }).$mount('#app')
+
+</script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh_EN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity .5s ease;
+        }
+        .fade-enter, .fade-leave-active {
+            opacity: 0
+        }
+        .child-view {
+            position: absolute;
+            transition: all .5s cubic-bezier(.55,0,.1,1);
+        }
+        .slide-left-enter, .slide-right-leave-active {
+            opacity: 0;
+            -webkit-transform: translate(100px, 0);
+            transform: translate(100px, 0);
+        }
+        .slide-left-leave-active, .slide-right-enter {
+            opacity: 0;
+            -webkit-transform: translate(-100px, 0);
+            transform: translate(-100px, 0);
+        }
+        #app{
+            width: 600px;
+            margin: 50px auto;
+        }
+    </style>
+</head>
+<body>
+<script src="../js/vue.js"></script>
+<script src="../js/vue-router.js"></script>
+
+<div id="app">
+    <h1>Transitions</h1>
+    <ul>
+        <li><router-link to="/">/</router-link></li>
+        <li><router-link to="/parent">/parent</router-link></li>
+        <li><router-link to="/parent/foo">/parent/foo</router-link></li>
+        <li><router-link to="/parent/bar">/parent/bar</router-link></li>
+    </ul>
+    <transition name="fade" mode="out-in">
+        <router-view class="view"></router-view>
+    </transition>
+</div>
+<script>
+    const Home = {
+        template: `
+    <div class="home">
+      <h2>Home</h2>
+      <p>hello</p>
+    </div>
+  `
+    };
+
+    const Parent = {
+        data () {
+            return {
+                transitionName: 'slide-left'
+
+            }
+        },
+        // dynamically set transition based on route change
+        watch: {
+            '$route' (to, from) {
+                const toDepth = to.path.split('/').length;
+                const fromDepth = from.path.split('/').length;
+                this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
+            }
+        },
+        template: `
+    <div class="parent">
+      <h2>Parent</h2>
+      <transition :name="transitionName" mode="out-in">
+        <router-view class="child-view"></router-view>
+      </transition>
+    </div>
+  `
+    };
+
+    const Default = { template: '<div class="default">default</div>' };
+    const Foo = { template: '<div class="foo">foo</div>' };
+    const Bar = { template: '<div class="bar">bar</div>' };
+
+    const router = new VueRouter({
+        mode: 'history',
+        routes: [
+            { path: '/', component: Home },
+            { path: '/parent', component: Parent,
+                children: [
+                    { path: '', component: Default },
+                    { path: 'foo', component: Foo },
+                    { path: 'bar', component: Bar }
+                ]
+            }
+        ]
+    })
+
+
+    // 4. 创建和挂载根实例。
+    // 记得要通过 router 配置参数注入路由，
+    // 从而让整个应用都有路由功能
+    const app = new Vue({
+        router
+    }).$mount('#app')
+
+</script>
+</body>
+</html>

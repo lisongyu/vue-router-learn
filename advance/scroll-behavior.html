@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh_EN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        .view {
+            border: 1px solid red;
+            height: 2000px;
+            position: relative;
+        }
+        #app{
+            padding-top: 400px;
+        }
+    </style>
+</head>
+<body>
+<script src="../js/vue.js"></script>
+<script src="../js/vue-router.js"></script>
+
+<div id="app">
+    <h1>Scroll Behavior</h1>
+    <ul>
+        <li><router-link to="/">/</router-link></li>
+        <li><router-link to="/foo">/foo</router-link></li>
+        <li><router-link to="/bar">/bar</router-link></li>
+        <li><router-link to="/bar#anchor">/bar#anchor 描点跳转在哪跳到哪</router-link></li>
+    </ul>
+    <router-view class="view"></router-view>
+</div>
+<script>
+    const Home = { template: '<div>home</div>' };
+    const Foo = { template: '<div>foo</div>' };
+    const Bar = {
+        template: `<div>bar<div style="height:500px"></div><p id="anchor">Anchor</p></div>`};
+
+    // scrollBehavior:
+    // - only available in html5 history mode
+    // - defaults to no scroll behavior
+    // - return false to prevent scroll
+    var scrollBehavior = function scrollBehavior(to, from, savedPosition) {
+        if (savedPosition) {
+            // savedPosition is only available for popstate navigations.
+            return savedPosition;
+        } else {
+            var position = {};
+            // new navigation.
+            // scroll to anchor by returning the selector
+            if (to.hash) {
+                position.selector = to.hash;
+            }
+            // check if any matched route config has meta that requires scrolling to top
+            if (to.matched.some(function (m) {
+                        return m.meta.scrollToTop;
+
+                    })) {
+                // cords will be used if no selector is provided,
+                // or if the selector didn't match any element.
+                //哪个为true哪个跳转
+                position.x = 0;
+                position.y = 0;
+            }
+            // if the returned position is falsy or an empty object,
+            // will retain current scroll position.
+            return position;
+        }
+    };
+
+    const router = new VueRouter({
+        mode: 'history',
+        scrollBehavior,
+        routes: [
+            { path: '/', component: Home, meta: { scrollToTop: true }},
+            { path: '/foo', component: Foo },
+            { path: '/bar', component: Bar, meta: { scrollToTop: true }}
+        ]
+    });
+
+
+
+
+
+    // 4. 创建和挂载根实例。
+    // 记得要通过 router 配置参数注入路由，
+    // 从而让整个应用都有路由功能
+    const app = new Vue({
+        router
+    }).$mount('#app')
+
+</script>
+</body>
+</html>
