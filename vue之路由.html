@@ -1,0 +1,656 @@
+<!DOCTYPE html><html><head><title>vue之路由</title><meta charset='utf-8'><link href='https://dn-maxiang.qbox.me/res-min/themes/marxico.css' rel='stylesheet'><style></style></head><body><div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="vue之路由">vue之路由</h3>
+
+<ul><li>安装</li>
+<li>基础 <br>
+<ul>
+<li>开始</li>
+<li>动态路由匹配</li>
+<li>嵌套路由</li>
+<li>编程式导航</li>
+<li>命名路由</li>
+<li>命名视图</li>
+<li>重定向 和 别名</li>
+<li>HTML5 History 模式</li></ul></li>
+<li>进阶 <br>
+<ul>
+<li>导航钩子</li>
+<li>路由元信息</li>
+<li>过渡动效</li>
+<li>数据获取</li>
+<li>滚动行为</li>
+<li>懒加载</li></ul></li>
+<li>API 文档 <br>
+<ul>
+<li>router-link</li>
+<li>router-view</li>
+<li>路由信息对象</li>
+<li>Router 构造配置</li>
+<li>Router 实例</li>
+<li>对组件注入</li></ul></li>
+</ul>
+
+<hr>
+
+
+
+<h4 id="1安装">1.安装</h4>
+
+
+
+<h5 id="直接下载-cdn">直接下载 / CDN</h5>
+
+<p><a href="https://unpkg.com/vue-router/dist/vue-router.js" target="_blank">https://unpkg.com/vue-router/dist/vue-router.js</a></p>
+
+<p><a href="https://unpkg.com/" target="_blank">Unpkg.com</a> 提供了基于 NPM 的 CDN 链接。上面的链接会一直指向在 NPM 发布的最新版本。你也可以像 <a href="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js" target="_blank">https://unpkg.com/vue-router@2.0.0/dist/vue-router.js</a> 这样指定 版本号 或者 Tag。</p>
+
+<p>在 Vue 后面加载 vue-router，它会自动安装的：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-html hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"/path/to/vue.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"/path/to/vue-router.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span><br></code></pre>
+
+
+
+<h5 id="npm">NPM</h5>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-shell"><span class="hljs-comment line-number">1.</span>npm install vue-router<br></code></pre>
+
+<p>如果在一个模块化工程中使用它，必须要通过 Vue.use() 明确地安装路由功能：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">import</span> Vue <span class="hljs-keyword">from</span> <span class="hljs-string">'vue'</span><br><span class="hljs-keyword">import</span> VueRouter <span class="hljs-keyword">from</span> <span class="hljs-string">'vue-router'</span><br><br>Vue.use(VueRouter)<br></code></pre>
+
+<p>如果使用全局的 script 标签，则无须如此（手动安装）。</p>
+
+
+
+<h5 id="构建开发版">构建开发版</h5>
+
+<p>如果你想使用最新的开发版，就得从 GitHub 上直接 clone，然后自己 build 一个 <strong>vue-router</strong>。</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-shell"><span class="hljs-comment line-number">1.</span>git clone https://github.com/vuejs/vue-router.git node_modules/vue-router<br><span class="hljs-comment line-number">2.</span>    cd node_modules/vue-router<br><span class="hljs-comment line-number">3.</span>    npm install<br><span class="hljs-comment line-number">4.</span>    npm run build<br></code></pre>
+
+
+
+<h4 id="2基础">2.基础</h4>
+
+
+
+<h5 id="21开始">2.1开始</h5>
+
+<blockquote>
+  <p>教程中的案例代码将使用 <strong>ES2015</strong> 来编写。</p>
+</blockquote>
+
+<p>用 <strong>Vue.js + vue-router</strong> 创建单页应用，是非常简单的。使用 Vue.js 时，我们就已经把组件组合成一个应用了，当你要把 <strong>vue-router</strong> 加进来，只需要配置组件和路由映射，然后告诉 vue-router 在哪里渲染它们。下面是个基本例子：</p>
+
+
+
+<h4 id="html">HTML</h4>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-html hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"https://unpkg.com/vue/dist/vue.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"https://unpkg.com/vue-router/dist/vue-router.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"app"</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-title">h1</span>&gt;</span>Hello App!<span class="hljs-tag">&lt;/<span class="hljs-title">h1</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- 使用 router-link 组件来导航. --&gt;</span><br>    <span class="hljs-comment">&lt;!-- 通过传入 `to` 属性指定链接. --&gt;</span><br>    <span class="hljs-comment">&lt;!-- &lt;router-link&gt; 默认会被渲染成一个 `&lt;a&gt;` 标签 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">router-link</span> <span class="hljs-attribute">to</span>=<span class="hljs-value">"/foo"</span>&gt;</span>Go to Foo<span class="hljs-tag">&lt;/<span class="hljs-title">router-link</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">router-link</span> <span class="hljs-attribute">to</span>=<span class="hljs-value">"/bar"</span>&gt;</span>Go to Bar<span class="hljs-tag">&lt;/<span class="hljs-title">router-link</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span><br>  <span class="hljs-comment">&lt;!-- 路由出口 --&gt;</span><br>  <span class="hljs-comment">&lt;!-- 路由匹配到的组件将渲染在这里 --&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-title">router-view</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">router-view</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span><br></code></pre>
+
+
+
+<h4 id="js">JS</h4>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-comment">// 0. 如果使用模块化机制编程，導入Vue和VueRouter，要调用 Vue.use(VueRouter)</span><br><br><span class="hljs-comment">// 1. 定义（路由）组件。</span><br><span class="hljs-comment">// 可以从其他文件 import 进来</span><br><span class="hljs-keyword">const</span> Foo = { template: <span class="hljs-string">'&lt;div&gt;foo&lt;/div&gt;'</span> }<br><span class="hljs-keyword">const</span> Bar = { template: <span class="hljs-string">'&lt;div&gt;bar&lt;/div&gt;'</span> }<br><br><span class="hljs-comment">// 2. 定义路由</span><br><span class="hljs-comment">// 每个路由应该映射一个组件。 其中"component" 可以是</span><br><span class="hljs-comment">// 通过 Vue.extend() 创建的组件构造器，</span><br><span class="hljs-comment">// 或者，只是一个组件配置对象。</span><br><span class="hljs-comment">// 我们晚点再讨论嵌套路由。</span><br><span class="hljs-keyword">const</span> routes = [<br>  { path: <span class="hljs-string">'/foo'</span>, component: Foo },<br>  { path: <span class="hljs-string">'/bar'</span>, component: Bar }<br>]<br><br><span class="hljs-comment">// 3. 创建 router 实例，然后传 `routes` 配置</span><br><span class="hljs-comment">// 你还可以传别的配置参数, 不过先这么简单着吧。</span><br><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes <span class="hljs-comment">// （缩写）相当于 routes: routes</span><br>})<br><br><span class="hljs-comment">// 4. 创建和挂载根实例。</span><br><span class="hljs-comment">// 记得要通过 router 配置参数注入路由，</span><br><span class="hljs-comment">// 从而让整个应用都有路由功能</span><br><span class="hljs-keyword">const</span> app = <span class="hljs-keyword">new</span> Vue({<br>  router<br>}).$mount(<span class="hljs-string">'#app'</span>)<br><br><span class="hljs-comment">// 现在，应用已经启动了！</span><br></code></pre>
+
+<p>参考 <strong>routerStart.html</strong></p>
+
+<blockquote>
+  <p>要注意，当 &lt;router-link&gt;对应的路由匹配成功，将自动设置 <strong>class</strong> 属性值 <strong>.router-link-active</strong>。查看 API 文档 学习更多相关内容。</p>
+</blockquote>
+
+
+
+<h5 id="22动态路由匹配">2.2动态路由匹配</h5>
+
+<p>我们经常需要把某种模式匹配到的所有路由，全都映射到同个组件。例如，我们有一个 User 组件，对于所有 ID 各不相同的用户，都要使用这个组件来渲染。那么，我们可以在 vue-router 的路由路径中使用『动态路径参数』（<strong>dynamic segment</strong>）来达到这个效果：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> User = {<br>  template: <span class="hljs-string">'&lt;div&gt;User&lt;/div&gt;'</span><br>}<br><br><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [<br>    <span class="hljs-comment">// 动态路径参数 以冒号开头</span><br>    { path: <span class="hljs-string">'/user/:id'</span>, component: User }<br>  ]<br>})<br></code></pre>
+
+<p>现在呢，像 <strong>/user/foo</strong> 和 <strong>/user/bar</strong> 都将映射到相同的路由。 <br>
+一个『路径参数』使用冒号 : 标记。当匹配到一个路由时，参数值会被设置到 <strong>this.$route.params</strong>，可以在每个组件内使用。于是，我们可以更新 User 的模板，输出当前用户的 ID：(参考<strong>params.html</strong>)</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> User = {<br>  template: <span class="hljs-string">'&lt;div&gt;User {{ $route.params.id }}&lt;/div&gt;'</span><br>}<br></code></pre>
+
+<p>你可以在一个路由中设置多段『路径参数』，对应的值都会设置到 <strong>$route.params</strong> 中。例如：</p>
+
+<table>
+<thead>
+<tr>
+  <th>模式</th>
+  <th align="center">匹配路径</th>
+  <th align="right">$route.params</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td>user/:username</td>
+  <td align="center">/user/evan</td>
+  <td align="right">{ username: ‘evan’ }</td>
+</tr>
+<tr>
+  <td>/user/:username/post/:post_id</td>
+  <td align="center">/user/evan/post/123</td>
+  <td align="right">{ username: ‘evan’, post_id: 123 }</td>
+</tr>
+</tbody></table>
+
+
+<p>除了 <strong><span>$</span> route.params</strong> 外,<strong><span>$</span>route</strong> 对象还提供了其它有用的信息，例如，<strong><span>$</span>route.query</strong>（如果 URL 中有查询参数）、<strong><span>$</span>route.hash</strong> 等等。你可以查看 <strong>API 文档</strong> 的详细说明。</p>
+
+<p><strong>响应路由参数的变化</strong></p>
+
+<blockquote>
+  <p>提醒一下，当使用路由参数时，例如从 /user/foo 导航到 user/bar，<strong>原来的组件实例会被复用</strong>。因为两个路由都渲染同个组件，比起销毁再创建，复用则显得更加高效。不过，这也意味着<strong>组件的生命周期钩子不会再被调用</strong>。</p>
+</blockquote>
+
+<p>复用组件时，想对路由参数的变化作出响应的话，你可以简单地 watch（监测变化） $route 对象：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> User = {<br>  template: <span class="hljs-string">'...'</span>,<br>  watch: {<br>    <span class="hljs-string">'$route'</span> (to, from) {<br>      <span class="hljs-comment">// 对路由变化作出响应...</span><br>    }<br>  }<br>}<br></code></pre>
+
+
+
+<h5 id="23嵌套路由">2.3嵌套路由</h5>
+
+<p>实际生活中的应用界面，通常由多层嵌套的组件组合而成。同样地，URL 中各段动态路径也按某种结构对应嵌套的各层组件，例如：</p>
+
+
+
+<p><img longdesc="./HDTAAUX6[}`T`HTEA8C6D2.png" alt="Alt text" title="" type="image/png" src="data:image/png;base64,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" class=""> <br>
+借助 <strong>vue-router</strong>，使用嵌套路由配置，就可以很简单地表达这种关系。 <br>
+接着上节创建的 app：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-html hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"app"</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-title">router-view</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">router-view</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span><br></code></pre>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> User = {<br>  template: <span class="hljs-string">'&lt;div&gt;User {{ $route.params.id }}&lt;/div&gt;'</span><br>}<br><br><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [<br>    { path: <span class="hljs-string">'/user/:id'</span>, component: User }<br>  ]<br>})<br></code></pre>
+
+<p>这里的 <strong>&lt;router-view&gt;</strong> 是最顶层的出口，渲染最高级路由匹配到的组件。同样地，一个被渲染组件同样可以包含自己的嵌套 <strong>&lt;router-view&gt;</strong>。例如，在 User 组件的模板添加一个 <strong>&lt;router-view&gt;</strong>：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> User = {<br>  template: <span class="hljs-string">`<br>    &lt;div class="user"&gt;<br>      &lt;h2&gt;User {{ $route.params.id }}&lt;/h2&gt;<br>      &lt;router-view&gt;&lt;/router-view&gt;<br>    &lt;/div&gt;<br>  `</span><br>}<br></code></pre>
+
+<p>要在嵌套的出口中渲染组件，需要在 VueRouter 的参数中使用 children 配置：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [<br>    { path: <span class="hljs-string">'/user/:id'</span>, component: User,<br>      children: [<br>        {<br>          <span class="hljs-comment">// 当 /user/:id/profile 匹配成功，</span><br>          <span class="hljs-comment">// UserProfile 会被渲染在 User 的 &lt;router-view&gt; 中</span><br>          path: <span class="hljs-string">'profile'</span>,<br>          component: UserProfile<br>        },<br>        {<br>          <span class="hljs-comment">// 当 /user/:id/posts 匹配成功</span><br>          <span class="hljs-comment">// UserPosts 会被渲染在 User 的 &lt;router-view&gt; 中</span><br>          path: <span class="hljs-string">'posts'</span>,<br>          component: UserPosts<br>        }<br>      ]<br>    }<br>  ]<br>})<br></code></pre>
+
+<p><strong>要注意，以 / 开头的嵌套路径会被当作根路径。 这让你充分的使用嵌套组件而无须设置嵌套的路径。</strong></p>
+
+<p>你会发现，<strong>children</strong> 配置就是像 <strong>routes</strong> 配置一样的路由配置数组，所以呢，你可以嵌套多层路由。</p>
+
+<p>此时，基于上面的配置，当你访问 /user/foo 时，User 的出口是不会渲染任何东西，这是因为没有匹配到合适的子路由。如果你想要渲染点什么，可以提供一个 空的 子路由：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [<br>    {<br>      path: <span class="hljs-string">'/user/:id'</span>, component: User,<br>      children: [<br>        <span class="hljs-comment">// 当 /user/:id 匹配成功，</span><br>        <span class="hljs-comment">// UserHome 会被渲染在 User 的 &lt;router-view&gt; 中</span><br>        { path: <span class="hljs-string">''</span>, component: UserHome },<br><br>        <span class="hljs-comment">// ...其他子路由</span><br>      ]<br>    }<br>  ]<br>})<br></code></pre>
+
+<p>参考案例(<strong>nest.html</strong>)</p>
+
+
+
+<h5 id="25编程式导航">2.5编程式导航</h5>
+
+<p>除了使用 <strong>&lt;router-link&gt;</strong> 创建 a 标签来定义导航链接，我们还可以借助 router 的实例方法，通过编写代码来实现。</p>
+
+<blockquote>
+  <p><strong>router.push(location)</strong></p>
+</blockquote>
+
+<p>想要导航到不同的 URL，则使用 router.push 方法。这个方法会向 history 栈添加一个新的记录，所以，当用户点击浏览器后退按钮时，则回到之前的 URL。 <br>
+当你点击 <strong>&lt;router-link&gt;</strong> 时，这个方法会在内部调用，所以说，点击 <strong>&lt;router-link :to=”…”&gt;</strong> 等同于调用 <strong>router.push(…)</strong>。</p>
+
+<table>
+<thead>
+<tr>
+  <th>声明式</th>
+  <th align="center">编程式</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td><strong>&lt;router-link :to=”…”&gt;</strong></td>
+  <td align="center"><strong>router.push(…)</strong></td>
+</tr>
+</tbody></table>
+
+
+<p>该方法的参数可以是一个字符串路径，或者一个描述地址的对象。例如：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-comment">// 字符串</span><br>router.push(<span class="hljs-string">'home'</span>)<br><br><span class="hljs-comment">// 对象</span><br>router.push({ path: <span class="hljs-string">'home'</span> })<br><br><span class="hljs-comment">// 命名的路由</span><br>router.push({ name: <span class="hljs-string">'user'</span>, params: { userId: <span class="hljs-number">123</span> }})<br><br><span class="hljs-comment">// 带查询参数，变成 /register?plan=private</span><br>router.push({ path: <span class="hljs-string">'register'</span>, query: { plan: <span class="hljs-string">'private'</span> }})<br></code></pre>
+
+<p><strong>router.replace(location)</strong></p>
+
+<p>跟 <strong>router.push</strong> 很像，唯一的不同就是，它不会向 <strong>history</strong> 添加新记录，而是跟它的方法名一样 —— 替换掉当前的 <strong>history</strong> 记录。</p>
+
+<table>
+<thead>
+<tr>
+  <th>声明式</th>
+  <th align="center">编程式</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td><strong>&lt;router-link :to=”…” replace&gt;</strong></td>
+  <td align="center"><strong>router.replace(…)</strong></td>
+</tr>
+</tbody></table>
+
+
+<p><strong>router.go(n)</strong></p>
+
+<p>这个方法的参数是一个整数，意思是在 history 记录中向前或者后退多少步，类似 window.history.go(n)。</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-comment">// 在浏览器记录中前进一步，等同于 history.forward()</span><br>router.go(<span class="hljs-number">1</span>)<br><br><span class="hljs-comment">// 后退一步记录，等同于 history.back()</span><br>router.go(-<span class="hljs-number">1</span>)<br><br><span class="hljs-comment">// 前进 3 步记录</span><br>router.go(<span class="hljs-number">3</span>)<br><br><span class="hljs-comment">// 如果 history 记录不够用，那就默默地失败呗</span><br>router.go(-<span class="hljs-number">100</span>)<br>router.go(<span class="hljs-number">100</span>)<br></code></pre>
+
+
+
+<h5 id="26命名路由">2.6命名路由</h5>
+
+<p>有时候，通过一个名称来标识一个路由显得更方便一些，特别是在链接一个路由，或者是执行一些跳转的时候。你可以在创建 <strong>Router</strong> 实例的时候，在 <strong>routes</strong> 配置中给某个路由设置名称。</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [<br>    {<br>      path: <span class="hljs-string">'/user/:userId'</span>,<br>      name: <span class="hljs-string">'user'</span>,<br>      component: User<br>    }<br>  ]<br>})<br></code></pre>
+
+<p>要链接到一个命名路由，可以给 <strong>router-link</strong> 的 <strong>to</strong> 属性传一个对象：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-html hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">router-link</span> <span class="hljs-attribute">:to</span>=<span class="hljs-value">"{ name: 'user', params: { userId: 123 }}"</span>&gt;</span>User<span class="hljs-tag">&lt;/<span class="hljs-title">router-link</span>&gt;</span><br></code></pre>
+
+<p>这跟代码调用 <strong>router.push()</strong> 是一回事：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs">router.push({ name: <span class="hljs-string">'user'</span>, params: { userId: <span class="hljs-number">123</span> }})<br></code></pre>
+
+<p>这两种方式都会把路由导航到 /user/123 路径。(参考<strong>name.html</strong>)</p>
+
+
+
+<h5 id="27命名视图">2.7命名视图</h5>
+
+<p>有时候想同时（同级）展示多个视图，而不是嵌套展示，例如创建一个布局，有 sidebar（侧导航） 和 main（主内容） 两个视图，这个时候命名视图就派上用场了。你可以在界面中拥有多个单独命名的视图，而不是只有一个单独的出口。如果 router-view 没有设置名字，那么默认为 default。</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-html hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">router-view</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"view one"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">router-view</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-title">router-view</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"view two"</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"a"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">router-view</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-title">router-view</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"view three"</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"b"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">router-view</span>&gt;</span><br></code></pre>
+
+<p>一个视图使用一个组件渲染，因此对于同个路由，多个视图就需要多个组件。确保正确使用 components 配置）：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [<br>    {<br>      path: <span class="hljs-string">'/'</span>,<br>      components: {<br>        <span class="hljs-keyword">default</span>: Foo,<br>        a: Bar,<br>        b: Baz<br>      }<br>    }<br>  ]<br>})<br></code></pre>
+
+<p>参考 (<strong>nameView.html</strong>)</p>
+
+
+
+<h5 id="28重定向-和-别名">2.8重定向 和 别名</h5>
+
+<p><strong>重定向</strong> <br>
+重定向也是通过 routes 配置来完成，下面例子是从 /a 重定向到 /b：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [<br>    { path: <span class="hljs-string">'/a'</span>, redirect: <span class="hljs-string">'/b'</span> }<br>  ]<br>})<br></code></pre>
+
+<p>重定向的目标也可以是一个命名的路由：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [<br>    { path: <span class="hljs-string">'/a'</span>, redirect: { name: <span class="hljs-string">'foo'</span> }}<br>  ]<br>})<br></code></pre>
+
+<p>甚至是一个方法，动态返回重定向目标：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [<br>    { path: <span class="hljs-string">'/a'</span>, redirect: to =&gt; {<br>      <span class="hljs-comment">// 方法接收 目标路由 作为参数</span><br>      <span class="hljs-comment">// return 重定向的 字符串路径/路径对象</span><br>    }}<br>  ]<br>})<br></code></pre>
+
+<p>参考(<strong>redirectFn.html</strong>)</p>
+
+<p><strong>别名</strong></p>
+
+<blockquote>
+  <p>『重定向』的意思是，当用户访问 /a时，URL 将会被替换成 /b，然后匹配路由为 /b，那么『别名』又是什么呢？ <br>
+  /a 的别名是 /b，意味着，当用户访问 /b 时，URL 会保持为 /b，但是路由匹配则为 /a，就像用户访问 /a 一样。</p>
+</blockquote>
+
+<p>上面对应的路由配置为：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [<br>    { path: <span class="hljs-string">'/a'</span>, component: A, alias: <span class="hljs-string">'/b'</span> }<br>  ]<br></code></pre>
+
+<p>『别名』的功能让你可以自由地将 UI 结构映射到任意的 URL，而不是受限于配置的嵌套路由结构。(参考<strong>rename.html</strong>)</p>
+
+
+
+<h5 id="29html5-history-模式">2.9HTML5 History 模式</h5>
+
+<p><strong>vue-router</strong> 默认 <strong>hash</strong> 模式 —— 使用 URL 的 <strong>hash</strong> 来模拟一个完整的 URL，于是当 URL 改变时，页面不会重新加载。</p>
+
+<p>如果不想要很丑的 hash，我们可以用路由的 <strong>history</strong> 模式，这种模式充分利用 <strong>history.pushState</strong> API 来完成 URL 跳转而无须重新加载页面。</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  mode: <span class="hljs-string">'history'</span>,<br>  routes: [...]<br>})<br></code></pre>
+
+<p>当你使用 <strong>history</strong> 模式时，URL 就像正常的 url，例如 <a href="http://yoursite.com/user/id" target="_blank">http://yoursite.com/user/id</a>，也好看！</p>
+
+<blockquote>
+  <p>不过这种模式要玩好，还需要后台配置支持。因为我们的应用是个单页客户端应用，如果后台没有正确的配置，当用户在浏览器直接访问 <a href="http://oursite.com/user/id" target="_blank">http://oursite.com/user/id</a> 就会返回 404，这就不好看了。</p>
+</blockquote>
+
+<p>所以呢，你要在服务端增加一个覆盖所有情况的候选资源：如果 URL 匹配不到任何静态资源，则应该返回同一个 index.html 页面，这个页面就是你 app 依赖的页面。</p>
+
+<hr>
+
+<h6 id="291警告">2.9.1警告</h6>
+
+<p>给个警告，因为这么做以后，你的服务器就不再返回 404 错误页面，因为对于所有路径都会返回 index.html 文件。为了避免这种情况，你应该在 Vue 应用里面覆盖所有的路由情况，然后在给出一个 404 页面。</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  mode: <span class="hljs-string">'history'</span>,<br>  routes: [<br>    { path: <span class="hljs-string">'*'</span>, component: NotFoundComponent }<br>  ]<br>})<br></code></pre>
+
+<h4 id="3进阶">3.进阶</h4>
+
+
+
+<h5 id="31导航钩子">3.1导航钩子</h5>
+
+<blockquote>
+  <p>正如其名，vue-router 提供的<strong>导航钩子</strong>主要用来<strong>拦截导航</strong>，让它完成<strong>跳转或取消</strong>。有多种方式可以在路由导航发生时执行钩子：全局的, 单个路由独享的, 或者组件级的。</p>
+</blockquote>
+
+
+
+<h6 id="311全局钩子">3.1.1全局钩子</h6>
+
+<p>你可以使用 <strong>router.beforeEach</strong> 注册一个全局的 before 钩子：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({ ... })<br>router.beforeEach((to, from, next) =&gt; {<br>  <span class="hljs-comment">// ...</span><br>})<br></code></pre>
+
+<p>当一个导航触发时，全局的 before 钩子按照创建顺序调用。钩子是异步解析执行，此时导航在所有钩子 resolve 完之前一直处于 <strong>等待中</strong>。 <br>
+每个钩子方法接收三个参数：</p>
+
+<ul><li>to: Route: 即将要进入的目标 <strong>路由对象</strong></li>
+<li>from: Route: 当前导航正要离开的路由</li>
+<li>next: Function: 一定要调用该方法来 resolve 这个钩子。执行效果依赖 <strong>next</strong> 方法的调用参数。 <br>
+<ul>
+<li><strong>next()</strong>: 进行管道中的下一个钩子。如果全部钩子执行完了，则导航的状态就是 confirmed （确认的）。</li>
+<li><strong>next(false):</strong> 中断当前的导航。如果浏览器的 URL 改变了（可能是用户手动或者浏览器后退按钮），那么 URL 地址会重置到 from 路由对应的地址。</li>
+<li><strong>next(‘/’)</strong> 或者 <strong>next({ path: ‘/’ })</strong>: 跳转到一个不同的地址。当前的导航被中断，然后进行一个新的导航。</li></ul></li>
+</ul>
+
+<p><strong>确保要调用 next 方法，否则钩子就不会被 resolved。</strong></p>
+
+<p>参考<strong>beforeEach.html</strong>以及<strong>beforeEach1.html</strong>(跳转到不同地址)和<strong>beforeEach2.html</strong>(跳转到不同地址正确)</p>
+
+<p>同样可以注册一个全局的 after 钩子，不过它不像 <strong>before</strong> 钩子那样，<strong>after</strong> 钩子没有 <strong>next</strong> 方法，不能改变导航：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs">router.afterEach(route =&gt; {<br>  <span class="hljs-comment">// ...</span><br>})<br></code></pre>
+
+<hr>
+
+
+
+<h6 id="312某个路由独享的钩子">3.1.2某个路由独享的钩子</h6>
+
+<p>你可以在路由配置上直接定义 <strong>beforeEnter</strong> 钩子：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [<br>    {<br>      path: <span class="hljs-string">'/foo'</span>,<br>      component: Foo,<br>      beforeEnter: (to, from, next) =&gt; {<br>        <span class="hljs-comment">// ...</span><br>      }<br>    }<br>  ]<br>})<br></code></pre>
+
+<p>这些钩子与全局 before 钩子的方法参数是一样的。参考(<strong>singleHook.html</strong>)</p>
+
+
+
+<h6 id="313组件内的钩子">3.1.3组件内的钩子</h6>
+
+<p>最后，你可以使用 <strong>beforeRouteEnter</strong> 和 <strong>beforeRouteLeave</strong>，在路由组件内直接定义路由导航钩子，</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> Foo = {<br>  template: <span class="hljs-string">`...`</span>,<br>  beforeRouteEnter (to, from, next) {<br>    <span class="hljs-comment">// 在渲染该组件的对应路由被 confirm 前调用</span><br>    <span class="hljs-comment">// 不！能！获取组件实例 `this`</span><br>    <span class="hljs-comment">// 因为当钩子执行前，组件实例还没被创建</span><br>  },<br>  beforeRouteLeave (to, from, next) {<br>    <span class="hljs-comment">// 导航离开该组件的对应路由时调用</span><br>    <span class="hljs-comment">// 可以访问组件实例 `this`</span><br>  }<br>}<br></code></pre>
+
+<p>beforeRouteEnter 钩子 不能 访问 <strong>this</strong>，因为钩子在导航确认前被调用,因此即将登场的新组件还没被创建。 <br>
+不过，你可以通过传一个回调给 <strong>next来访问组件实例</strong>。在导航被确认的时候执行回调，并且把组件实例作为回调方法的参数。</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs">beforeRouteEnter (to, from, next) {<br>  next(vm =&gt; {<br>    <span class="hljs-comment">// 通过 `vm` 访问组件实例</span><br>  })<br>}<br></code></pre>
+
+<p>你可以 在 beforeRouteLeave 中直接访问 this(参考<strong>componentHook.html</strong>)。这个 <strong>leave</strong> 钩子通常用来禁止用户在<strong>还未保存修改前突然离开</strong>(参考<strong>componentHook.html1</strong>)。可以通过 <strong>next(false)</strong> 来取消导航。</p>
+
+<hr>
+
+
+
+<h5 id="32路由元信息">3.2路由元信息</h5>
+
+<p>定义路由的时候可以配置 meta 字段：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [<br>    {<br>      path: <span class="hljs-string">'/foo'</span>,<br>      component: Foo,<br>      children: [<br>        {<br>          path: <span class="hljs-string">'bar'</span>,<br>          component: Bar,<br>          <span class="hljs-comment">// a meta field</span><br>          meta: { requiresAuth: <span class="hljs-literal">true</span> }<br>        }<br>      ]<br>    }<br>  ]<br>})<br></code></pre>
+
+<p>那么如何访问这个 meta 字段呢？</p>
+
+<p>首先，我们称呼 routes 配置中的每个路由对象为 <strong>路由记录</strong>。路由记录可以是嵌套的，因此，当一个路由匹配成功后，他可能匹配多个路由记录 <br>
+例如，根据上面的路由配置，/foo/bar 这个 URL 将会匹配父路由记录以及子路由记录。 <br>
+一个路由匹配到的所有路由记录会暴露为 <span>$</span>route 对象（还有在导航钩子中的 route 对象）的 <span>$</span>route.matched 数组。因此，我们需要遍历 $route.matched 来检查路由记录中的 meta 字段。 <br>
+下面例子展示在全局导航钩子中检查 meta 字段：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs">router.beforeEach((to, from, next) =&gt; {<br>  <span class="hljs-keyword">if</span> (to.matched.some(record =&gt; record.meta.requiresAuth)) {<br>    <span class="hljs-comment">// this route requires auth, check if logged in</span><br>    <span class="hljs-comment">// if not, redirect to login page.</span><br>    <span class="hljs-keyword">if</span> (!auth.loggedIn()) {<br>      next({<br>        path: <span class="hljs-string">'/login'</span>,<br>        query: { redirect: to.fullPath }<br>      })<br>    } <span class="hljs-keyword">else</span> {<br>      next()<br>    }<br>  } <span class="hljs-keyword">else</span> {<br>    next() <span class="hljs-comment">// 确保一定要调用 next()</span><br>  }<br>})<br></code></pre>
+
+<p>参考(<strong>roundInf.html</strong>)</p>
+
+<hr>
+
+
+
+<h5 id="33过渡动效">3.3过渡动效</h5>
+
+<p><strong>&lt;router-view&gt;</strong> 是基本的动态组件，所以我们可以用 <strong>&lt;transition&gt;</strong>  组件给它添加一些过渡效果：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-html hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">transition</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-title">router-view</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">router-view</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-title">transition</span>&gt;</span><br></code></pre>
+
+<p><strong>&lt;transition&gt;</strong>的所有功能 在这里同样适用。</p>
+
+
+
+<h5 id="331单个路由的过渡">3.3.1单个路由的过渡</h5>
+
+<p>上面的用法会给所有路由设置一样的过渡效果，如果你想让每个路由组件有各自的过渡效果，可以在各路由组件内使用 <strong>&lt;transition&gt;</strong>并设置不同的 name。</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> Foo = {<br>  template: <span class="hljs-string">`<br>    &lt;transition name="slide"&gt;<br>      &lt;div class="foo"&gt;...&lt;/div&gt;<br>    &lt;/transition&gt;<br>  `</span><br>}<br><br><span class="hljs-keyword">const</span> Bar = {<br>  template: <span class="hljs-string">`<br>    &lt;transition name="fade"&gt;<br>      &lt;div class="bar"&gt;...&lt;/div&gt;<br>    &lt;/transition&gt;<br>  `</span><br>}<br></code></pre>
+
+
+
+<h5 id="332基于路由的动态过渡">3.3.2基于路由的动态过渡</h5>
+
+<p>还可以基于当前路由与目标路由的变化关系，动态设置过渡效果：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-html hljs xml"><span class="hljs-comment">&lt;!-- 使用动态的 transition name --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-title">transition</span> <span class="hljs-attribute">:name</span>=<span class="hljs-value">"transitionName"</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-title">router-view</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">router-view</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-title">transition</span>&gt;</span><br>// 接着在父组件内<br>// watch $route 决定使用哪种过渡<br>watch: {<br>  '$route' (to, from) {<br>    const toDepth = to.path.split('/').length<br>    const fromDepth = from.path.split('/').length<br>    this.transitionName = toDepth <span class="hljs-tag">&lt; <span class="hljs-attribute">fromDepth</span> ? '<span class="hljs-attribute">slide-right</span>' <span class="hljs-attribute">:</span> '<span class="hljs-attribute">slide-left</span>'<br>  }<br>}</span><br></code></pre>
+
+<p>参考(<strong>transition.html</strong>)</p>
+
+<hr>
+
+
+
+<h5 id="34数据获取">3.4数据获取</h5>
+
+<p>有时候，进入某个路由后，需要从服务器获取数据。例如，在渲染用户信息时，你需要从服务器获取用户的数据。我们可以通过两种方式来实现：</p>
+
+<ul><li><strong>导航完成之后获取：</strong>先完成导航，然后在接下来的组件生命周期钩子中获取数据。在数据获取期间显示『加载中』之类的指示。</li>
+<li><strong>导航完成之前获取：</strong>导航完成前，在路由的 enter 钩子中获取数据，在数据获取成功后执行导航。</li>
+</ul>
+
+<p>从技术角度讲，两种方式都不错 —— 就看你想要的用户体验是哪种。</p>
+
+<hr>
+
+
+
+<h6 id="341导航完成后获取数据">3.4.1导航完成后获取数据</h6>
+
+<p>当你使用这种方式时，我们会马上导航和渲染组件，然后在组件的 created 钩子中获取数据。这让我们有机会在数据获取期间展示一个 loading 状态，还可以在不同视图间展示不同的 loading 状态。 <br>
+假设我们有一个 Post 组件，需要基于 $route.params.id 获取文章数据：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-html hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">template</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"post"</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"loading"</span> <span class="hljs-attribute">v-if</span>=<span class="hljs-value">"loading"</span>&gt;</span><br>      Loading...<br>    <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">v-if</span>=<span class="hljs-value">"error"</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"error"</span>&gt;</span><br>      {{ error }}<br>    <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">v-if</span>=<span class="hljs-value">"post"</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"content"</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-title">h2</span>&gt;</span>{{ post.title }}<span class="hljs-tag">&lt;/<span class="hljs-title">h2</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>{{ post.body }}<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-title">template</span>&gt;</span><br></code></pre>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> {<br>  data () {<br>    <span class="hljs-keyword">return</span> {<br>      loading: <span class="hljs-literal">false</span>,<br>      post: <span class="hljs-literal">null</span>,<br>      error: <span class="hljs-literal">null</span><br>    }<br>  },<br>  created () {<br>    <span class="hljs-comment">// 组件创建完后获取数据，</span><br>    <span class="hljs-comment">// 此时 data 已经被 observed 了</span><br>    <span class="hljs-keyword">this</span>.fetchData()<br>  },<br>  watch: {<br>    <span class="hljs-comment">// 如果路由有变化，会再次执行该方法</span><br>    <span class="hljs-string">'$route'</span>: <span class="hljs-string">'fetchData'</span><br>  },<br>  methods: {<br>    fetchData () {<br>      <span class="hljs-keyword">this</span>.error = <span class="hljs-keyword">this</span>.post = <span class="hljs-literal">null</span><br>      <span class="hljs-keyword">this</span>.loading = <span class="hljs-literal">true</span><br>      <span class="hljs-comment">// replace getPost with your data fetching util / API wrapper</span><br>      getPost(<span class="hljs-keyword">this</span>.$route.params.id, (err, post) =&gt; {<br>        <span class="hljs-keyword">this</span>.loading = <span class="hljs-literal">false</span><br>        <span class="hljs-keyword">if</span> (err) {<br>          <span class="hljs-keyword">this</span>.error = err.toString()<br>        } <span class="hljs-keyword">else</span> {<br>          <span class="hljs-keyword">this</span>.post = post<br>        }<br>      })<br>    }<br>  }<br>}<br><br></code></pre>
+
+<p>参考(<strong>data.html</strong>)</p>
+
+<h6 id="342在导航完成前获取数据">3.4.2在导航完成前获取数据</h6>
+
+<p>通过这种方式，我们在导航转入新的路由前获取数据。我们可以在接下来的组件的 beforeRouteEnter 钩子中获取数据，当数据获取成功后只调用 next 方法。</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> {<br>  data () {<br>    <span class="hljs-keyword">return</span> {<br>      post: <span class="hljs-literal">null</span>,<br>      error: <span class="hljs-literal">null</span><br>    }<br>  },<br>  beforeRouteEnter (to, from, next) {<br>    getPost(to.params.id, (err, post) =&gt; <br>      <span class="hljs-keyword">if</span> (err) {<br>        <span class="hljs-comment">// display some global error message</span><br>        next(<span class="hljs-literal">false</span>)<br>      } <span class="hljs-keyword">else</span> {<br>        next(vm =&gt; {<br>          vm.post = post<br>        })<br>      }<br>    })<br>  },<br>  <span class="hljs-comment">// 路由改变前，组件就已经渲染完了</span><br>  <span class="hljs-comment">// 逻辑稍稍不同</span><br>  watch: {<br>    $route () {<br>      <span class="hljs-keyword">this</span>.post = <span class="hljs-literal">null</span><br>      getPost(<span class="hljs-keyword">this</span>.$route.params.id, (err, post) =&gt; {<br>        <span class="hljs-keyword">if</span> (err) {<br>          <span class="hljs-keyword">this</span>.error = err.toString()<br>        } <span class="hljs-keyword">else</span> {<br>          <span class="hljs-keyword">this</span>.post = post<br>        }<br>      })<br>    }<br>  }<br>}<br></code></pre>
+
+<p>在为后面的视图获取数据时，用户会停留在当前的界面，因此建议在数据获取期间，显示一些进度条或者别的指示。如果数据获取失败，同样有必要展示一些全局的错误提醒。</p>
+
+<hr>
+
+
+
+<h5 id="35滚动行为">3.5滚动行为</h5>
+
+<p>使用前端路由，当切换到新路由时，想要页面滚到顶部，或者是保持原先的滚动位置，就像重新加载页面那样。 <strong>vue-router</strong> 能做到，而且更好，它让你可以自定义路由切换时页面如何滚动。</p>
+
+<blockquote>
+  <p>注意: 这个功能只在 <strong>HTML5 history</strong> 模式下可用。</p>
+</blockquote>
+
+<p>当创建一个 Router 实例，你可以提供一个 <strong>scrollBehavior</strong> 方法：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [...],<br>  scrollBehavior (to, from, savedPosition) {<br>    <span class="hljs-comment">// return 期望滚动到哪个的位置</span><br>  }<br>})<br></code></pre>
+
+<p><strong>scrollBehavior</strong> 方法接收 <strong>to</strong> 和 <strong>from</strong> 路由对象。第三个参数 <strong>savedPosition</strong> 当且仅当 <strong>popstate</strong> 导航 (通过浏览器的 前进/后退 按钮触发) 时才可用。</p>
+
+<p>这个方法返回滚动位置的对象信息，长这样：</p>
+
+<ul><li>{ x: number, y: number }</li>
+<li>{ selector: string }</li>
+</ul>
+
+<p>如果返回一个布尔假的值，或者是一个空对象，那么不会发生滚动。 <br>
+举例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs">scrollBehavior (to, from, savedPosition) {<br>  <span class="hljs-keyword">return</span> { x: <span class="hljs-number">0</span>, y: <span class="hljs-number">0</span> }<br>}<br></code></pre>
+
+<p>对于所有路由导航，简单地让页面滚动到顶部。</p>
+
+<p>返回 <strong>savedPosition</strong>，在按下 后退/前进 按钮时，就会像浏览器的原生表现那样：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs">scrollBehavior (to, from, savedPosition) {<br>  <span class="hljs-keyword">if</span> (savedPosition) {<br>    <span class="hljs-keyword">return</span> savedPosition<br>  } <span class="hljs-keyword">else</span> {<br>    <span class="hljs-keyword">return</span> { x: <span class="hljs-number">0</span>, y: <span class="hljs-number">0</span> }<br>  }<br>}<br></code></pre>
+
+<p>如果你要模拟『滚动到锚点』的行为：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs">scrollBehavior (to, from, savedPosition) {<br>  <span class="hljs-keyword">if</span> (to.hash) {<br>    <span class="hljs-keyword">return</span> {<br>      selector: to.hash<br>    }<br>  }<br>}<br></code></pre>
+
+
+
+<h5 id="36懒加载">3.6懒加载</h5>
+
+<p>当打包构建应用时，Javascript 包会变得非常大，影响页面加载。如果我们能把不同路由对应的组件分割成不同的代码块，然后当路由被访问的时候才加载对应组件，这样就更加高效了。</p>
+
+<p>结合 Vue 的 <strong>异步组件</strong> 和 Webpack 的 c<strong>ode splitting feature</strong>, 轻松实现路由组件的懒加载。 <br>
+我们要做的就是把路由对应的组件定义成异步组件：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> Foo = resolve =&gt; {<br>  <span class="hljs-comment">// require.ensure 是 Webpack 的特殊语法，用来设置 code-split point</span><br>  <span class="hljs-comment">// （代码分块）</span><br>  <span class="hljs-built_in">require</span>.ensure([<span class="hljs-string">'./Foo.vue'</span>], () =&gt; {<br>    resolve(<span class="hljs-built_in">require</span>(<span class="hljs-string">'./Foo.vue'</span>))<br>  })<br>}<br></code></pre>
+
+<p>这里还有另一种代码分块的语法，使用 AMD 风格的 require，于是就更简单了：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> Foo = resolve =&gt; <span class="hljs-built_in">require</span>([<span class="hljs-string">'./Foo.vue'</span>], resolve)<br></code></pre>
+
+<p>不需要改变任何路由配置，跟之前一样使用 Foo：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> VueRouter({<br>  routes: [<br>    { path: <span class="hljs-string">'/foo'</span>, component: Foo }<br>  ]<br>})<br></code></pre>
+
+<p><strong>把组件按组分块</strong></p>
+
+<p>有时候我们想把某个路由下的所有组件都打包在同个异步 chunk 中。只需要 给 chunk 命名，提供 require.ensure 第三个参数作为 <strong>chunk</strong> 的名称:</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><span class="hljs-keyword">const</span> Foo = r =&gt; <span class="hljs-built_in">require</span>.ensure([], () =&gt; r(<span class="hljs-built_in">require</span>(<span class="hljs-string">'./Foo.vue'</span>)), <span class="hljs-string">'group-foo'</span>)<br><span class="hljs-keyword">const</span> Bar = r =&gt; <span class="hljs-built_in">require</span>.ensure([], () =&gt; r(<span class="hljs-built_in">require</span>(<span class="hljs-string">'./Bar.vue'</span>)), <span class="hljs-string">'group-foo'</span>)<br><span class="hljs-keyword">const</span> Baz = r =&gt; <span class="hljs-built_in">require</span>.ensure([], () =&gt; r(<span class="hljs-built_in">require</span>(<span class="hljs-string">'./Baz.vue'</span>)), <span class="hljs-string">'group-foo'</span>)<br></code></pre>
+
+<p>Webpack 将相同 chunk 下的所有异步模块打包到一个异步块里面 —— 这也意味着我们无须明确列出 require.ensure 的依赖（传空数组就行）。</p>
+
+
+
+<h4 id="4参考文献">4.参考文献</h4>
+
+<ol><li rel="1">参考demo <a href="https://github.com/vuejs/vue-router/" target="_blank">github地址</a></li>
+<li rel="2">参考文档  <a href="http://router.vuejs.org/" target="_blank">http://router.vuejs.org/</a></li>
+</ol></div></body></html>
